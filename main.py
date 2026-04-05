@@ -24,7 +24,7 @@ def open_contribution_window():
     entry_due = tk.Entry(contrib_window, width=40)
     entry_due.pack(padx=10)
 
-    # --- Submit button ---
+    # --- Add button ---
     def submit_info():
         name = entry_name.get()
         if not name.strip():
@@ -33,13 +33,13 @@ def open_contribution_window():
         add_program_to_list(name)  # Add only Program Name to scrollable area
         contrib_window.destroy()
 
-    tk.Button(contrib_window, text="Submit", command=submit_info).pack(pady=15)
+    tk.Button(contrib_window, text="Add", command=submit_info).pack(pady=15)
 
 # --- Function to add clickable program name to scrollable area ---
 def add_program_to_list(program_name):
     def on_click(event, name=program_name):
         messagebox.showinfo("Program Clicked", f"You clicked on '{name}'")
-        # Later, you can open a new window with full program details
+        # Later, you can open a new window with full program details or receipt
 
     lbl = tk.Label(
         scrollable_frame,
