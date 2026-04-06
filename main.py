@@ -30,41 +30,63 @@ def open_contribution_window():
         if not name.strip():
             messagebox.showwarning("Input Error", "Program Name cannot be empty!")
             return
-        add_program_to_list(name)  # Add only Program Name to scrollable area
+        add_program_to_list(name, "Some middle text")  # Example middle text
         contrib_window.destroy()
 
     tk.Button(contrib_window, text="Add", command=submit_info).pack(pady=15)
 
-# --- Function to add clickable program name to scrollable area ---
-def add_program_to_list(program_name):
+# --- Function to add program with far-right dots ---
+def add_program_to_list(program_name, middle_text=""):
     def on_click(event, name=program_name):
         messagebox.showinfo("Program Clicked", f"You clicked on '{name}'")
-        # Later, you can open a new window with full program details or receipt
 
-    lbl = tk.Label(
-        scrollable_frame,
-        text=program_name,
-        anchor="w",
-        font=("Arial", 12, "bold"),
-        fg="orange",       # clickable color
-        cursor="hand2"
-    )
-    lbl.pack(fill="x", padx=5, pady=2)
-    lbl.bind("<Button-1>", on_click)  # Make it clickable
+    def delete_program():
+        lbl_frame.destroy()  # Remove program from scrollable area
+
+    # Frame for row
+    lbl_frame = tk.Frame(scrollable_frame)
+    lbl_frame.pack(fill="x", padx=5, pady=2)
+
+    # Column 0: Program Name
+    lbl_name = tk.Label(lbl_frame, text=program_name, font=("Arial", 12, "bold"),
+                        fg="orange", cursor="hand2", anchor="w")
+    lbl_name.grid(row=0, column=0, sticky="w")
+    lbl_name.bind("<Button-1>", on_click)
+
+    # Column 1: Middle text (expandable)
+    lbl_middle = tk.Label(lbl_frame, text=middle_text, anchor="center")
+    lbl_middle.grid(row=0, column=1, sticky="we", padx=10)
+
+    # Column 2: Dots button (far right)
+    dots_btn = tk.Button(lbl_frame, text="⋮", font=("Arial", 12), bd=0, cursor="hand2")
+    dots_btn.grid(row=0, column=2, sticky="e")
+
+    # Make column 1 expand to push dots to the far right
+    lbl_frame.grid_columnconfigure(1, weight=1)
+
+    # Menu for dots
+    menu = tk.Menu(lbl_frame, tearoff=0)
+    menu.add_command(label="Delete", command=delete_program)
+
+    def show_menu(event):
+        menu.tk_popup(event.x_root, event.y_root)
+
+    dots_btn.bind("<Button-1>", show_menu)
 
 # --- Main window ---
 root = tk.Tk()
-root.title("Main Page") 
-root.geometry("600x500")   
+root.title("Main Page")
+root.geometry("600x500")
 
 # --- Button to open Contribution Program ---
-tk.Button(root, text="Create Contribution Program", command=open_contribution_window, width=30, height=2).pack(pady=10)
+tk.Button(root, text="Create Contribution Program", command=open_contribution_window,
+          width=30, height=2).pack(pady=10)
 
-# --- Clean straight horizontal line ---
+# --- Horizontal separator ---
 separator = ttk.Separator(root, orient='horizontal')
 separator.pack(fill='x', padx=10, pady=5)
 
-# --- Scrollable area for created programs ---
+# --- Scrollable area ---
 scroll_frame = tk.Frame(root)
 scroll_frame.pack(fill="both", expand=True, padx=10, pady=5)
 
