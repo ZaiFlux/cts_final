@@ -26,16 +26,23 @@ def open_contribution_window():
 
     # --- Add button ---
     def submit_info():
-        name = entry_name.get()
-        if not name.strip():
+        name = entry_name.get().strip()
+        purpose = entry_purpose.get().strip()
+        target = entry_target.get().strip()
+        due = entry_due.get().strip()
+
+        if not name:
             messagebox.showwarning("Input Error", "Program Name cannot be empty!")
             return
-        add_program_to_list(name, "Some middle text")  # Example middle text
+
+        # Create a middle text automatically
+        middle_text = f"Purpose: {purpose} | Target: {target} | Due: {due}"
+        add_program_to_list(name, middle_text)
         contrib_window.destroy()
 
     tk.Button(contrib_window, text="Add", command=submit_info).pack(pady=15)
 
-# --- Function to add program with far-right dots ---
+# --- Function to add program with dynamic middle details and far-right dots ---
 def add_program_to_list(program_name, middle_text=""):
     def on_click(event, name=program_name):
         messagebox.showinfo("Program Clicked", f"You clicked on '{name}'")
@@ -43,31 +50,32 @@ def add_program_to_list(program_name, middle_text=""):
     def delete_program():
         lbl_frame.destroy()  # Remove program from scrollable area
 
-    # Frame for row
+    # Frame for each row
     lbl_frame = tk.Frame(scrollable_frame)
     lbl_frame.pack(fill="x", padx=5, pady=2)
 
-    # Column 0: Program Name
+    # Column 0: Program Name (left)
     lbl_name = tk.Label(lbl_frame, text=program_name, font=("Arial", 12, "bold"),
                         fg="orange", cursor="hand2", anchor="w")
     lbl_name.grid(row=0, column=0, sticky="w")
     lbl_name.bind("<Button-1>", on_click)
 
-    # Column 1: Middle text (expandable)
-    lbl_middle = tk.Label(lbl_frame, text=middle_text, anchor="center")
+    # Column 1: Middle details (expandable)
+    lbl_middle = tk.Label(lbl_frame, text=middle_text, anchor="w")
     lbl_middle.grid(row=0, column=1, sticky="we", padx=10)
 
     # Column 2: Dots button (far right)
     dots_btn = tk.Button(lbl_frame, text="⋮", font=("Arial", 12), bd=0, cursor="hand2")
     dots_btn.grid(row=0, column=2, sticky="e")
 
-    # Make column 1 expand to push dots to the far right
+    # Make middle column expand to push dots to the far right
     lbl_frame.grid_columnconfigure(1, weight=1)
 
     # Menu for dots
     menu = tk.Menu(lbl_frame, tearoff=0)
     menu.add_command(label="Delete", command=delete_program)
 
+    # Show menu when dots clicked
     def show_menu(event):
         menu.tk_popup(event.x_root, event.y_root)
 
