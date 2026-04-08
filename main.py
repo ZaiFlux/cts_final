@@ -7,7 +7,7 @@ def open_contribution_window():
     contrib_window.title("Create Contribution Program")
     contrib_window.geometry("400x300")
 
-    # Labels and Entries
+    # Inputs
     tk.Label(contrib_window, text="Program Name:").pack(anchor="w", padx=10, pady=5)
     entry_name = tk.Entry(contrib_window, width=40)
     entry_name.pack(padx=10)
@@ -24,7 +24,7 @@ def open_contribution_window():
     entry_due = tk.Entry(contrib_window, width=40)
     entry_due.pack(padx=10)
 
-    # --- Add button ---
+    # Submit
     def submit_info():
         name = entry_name.get().strip()
         purpose = entry_purpose.get().strip()
@@ -40,7 +40,7 @@ def open_contribution_window():
 
     tk.Button(contrib_window, text="Add", command=submit_info).pack(pady=15)
 
-# --- Function to add program row ---
+# --- Function to add program row (NO COLUMNS, single line) ---
 def add_program_to_list(program_name, purpose, target, due):
 
     def on_click(event, name=program_name):
@@ -49,34 +49,31 @@ def add_program_to_list(program_name, purpose, target, due):
     def delete_program():
         lbl_frame.destroy()
 
-    # Row frame
+    # Row container
     lbl_frame = tk.Frame(scrollable_frame)
     lbl_frame.pack(fill="x", padx=5, pady=2)
 
-    # Column 0: Program Name
-    lbl_name = tk.Label(lbl_frame, text=program_name, font=("Arial", 12, "bold"),
-                        fg="orange", cursor="hand2")
-    lbl_name.grid(row=0, column=0, sticky="w")
-    lbl_name.bind("<Button-1>", on_click)
+    # 👉 Limit text length (prevents breaking alignment)
+    program_name = program_name[:18]
+    purpose = purpose[:18]
+    target = target[:13]
+    due = due[:13]
 
-    # Column 1: Purpose
-    tk.Label(lbl_frame, text=f"Purpose: {purpose}")\
-        .grid(row=0, column=1, padx=10, sticky="w")
+    # 👉 Fixed-width formatted text
+    row_text = f"{program_name:<20}{purpose:<20}{target:<15}{due:<15}"
 
-    # Column 2: Target
-    tk.Label(lbl_frame, text=f"Target: {target}")\
-        .grid(row=0, column=2, padx=10, sticky="w")
+    # Single label (monospace font for alignment)
+    lbl = tk.Label(lbl_frame,
+                   text=row_text,
+                   font=("Courier New", 11),
+                   anchor="w",
+                   cursor="hand2")
+    lbl.pack(side="left", fill="x", expand=True)
+    lbl.bind("<Button-1>", on_click)
 
-    # Column 3: Due Date (this expands)
-    tk.Label(lbl_frame, text=f"Due: {due}")\
-        .grid(row=0, column=3, padx=10, sticky="w")
-
-    # Column 4: 3 dots (far right)
+    # 3 dots button (far right)
     dots_btn = tk.Button(lbl_frame, text="⋮", font=("Arial", 12), bd=0, cursor="hand2")
-    dots_btn.grid(row=0, column=4, sticky="e")
-
-    # Make column 3 expand to push dots to the right
-    lbl_frame.grid_columnconfigure(3, weight=1)
+    dots_btn.pack(side="right")
 
     # Menu
     menu = tk.Menu(lbl_frame, tearoff=0)
@@ -93,15 +90,24 @@ root.title("Main Page")
 root.geometry("700x500")
 
 # Button
-tk.Button(root, text="Create Contribution Program",
+tk.Button(root,
+          text="Create Contribution Program",
           command=open_contribution_window,
-          width=30, height=2).pack(pady=10)
+          width=30,
+          height=2).pack(pady=10)
 
 # Separator
-separator = ttk.Separator(root, orient='horizontal')
-separator.pack(fill='x', padx=10, pady=5)
+ttk.Separator(root, orient='horizontal').pack(fill='x', padx=10, pady=5)
 
-# Scrollable area
+# --- Header (same format as rows) ---
+header_text = f"{'Program Name':<20}{'Purpose':<20}{'Target':<15}{'Due Date':<15}"
+
+tk.Label(root,
+         text=header_text,
+         font=("Courier New", 11, "bold"),
+         anchor="w").pack(fill="x", padx=10)
+
+# --- Scrollable area ---
 scroll_frame = tk.Frame(root)
 scroll_frame.pack(fill="both", expand=True, padx=10, pady=5)
 
