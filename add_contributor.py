@@ -23,7 +23,13 @@ def open_category_window():
 
     def confirm():
         selected = category_var.get()
+
+        # change button text
+        category_btn.config(text=selected)
+
+        # update placeholder
         set_placeholder(f"Enter {selected} name")
+
         cat_window.destroy()
 
     tk.Button(cat_window, text="OK", command=confirm).pack(pady=10)
@@ -53,8 +59,11 @@ root = tk.Tk()
 root.title("Main Window")
 root.geometry("400x300")
 
-tk.Button(root, text="Category", command=open_category_window).pack(pady=20)
+# category button (will change text)
+category_btn = tk.Button(root, text="Category", command=open_category_window)
+category_btn.pack(pady=20)
 
+# entry box
 entry = tk.Entry(root, width=30)
 entry.pack(pady=10)
 
@@ -63,7 +72,6 @@ entry.placeholder = "Enter name"
 entry.insert(0, entry.placeholder)
 entry.config(fg="grey")
 
-# events for placeholder behavior
 entry.bind("<FocusIn>", on_focus_in)
 entry.bind("<FocusOut>", on_focus_out)
 
