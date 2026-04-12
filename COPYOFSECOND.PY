@@ -1,13 +1,17 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-# ===== EMPTY DATA (READY FOR FUTURE ADD SYSTEM) =====
-contributors_data = []
+# ===== Sample Data (ALL ZERO) =====
+contributors_data = [
+    {"name": "Ana", "current": 0.00, "target": 0.00, "last_added": 0.00},
+    {"name": "John", "current": 0.00, "target": 0.00, "last_added": 0.00},
+    {"name": "Maria", "current": 0.00, "target": 0.00, "last_added": 0.00},
+]
 
 col_widths = [200, 100, 100, 120]
 edit_refresh_callback = None
 
-# ===== FUNCTIONS =====
+# ===== Functions =====
 def main_menu():
     print("Main Menu clicked")
 
@@ -17,38 +21,20 @@ def add_contributor():
 def generate_receipt():
     print("Generate Receipt clicked")
 
-# ===== MAIN TABLE REFRESH =====
+# ===== Main Table Refresh =====
 def refresh_table():
     for widget in scrollable_frame.winfo_children():
         widget.destroy()
 
-    # EMPTY STATE UI
-    if not contributors_data:
-        ttk.Label(
-            scrollable_frame,
-            text="No contributors yet. Add one to get started.",
-            font=("Arial", 11)
-        ).grid(row=0, column=0, columnspan=4, pady=20)
-        return
-
-    # NORMAL TABLE
     for row_index, data in enumerate(contributors_data):
         remaining = data["target"] - data["current"]
 
-        ttk.Label(scrollable_frame, text=data["name"]).grid(
-            row=row_index, column=0, sticky="w", padx=5, pady=2
-        )
-        ttk.Label(scrollable_frame, text=f"{data['current']:.2f}").grid(
-            row=row_index, column=1, sticky="e", padx=5
-        )
-        ttk.Label(scrollable_frame, text=f"{data['target']:.2f}").grid(
-            row=row_index, column=2, sticky="e", padx=5
-        )
-        ttk.Label(scrollable_frame, text=f"{remaining:.2f}").grid(
-            row=row_index, column=3, sticky="e", padx=5
-        )
+        ttk.Label(scrollable_frame, text=data["name"]).grid(row=row_index, column=0, sticky="w", padx=5, pady=2)
+        ttk.Label(scrollable_frame, text=f"{data['current']:.2f}").grid(row=row_index, column=1, sticky="e", padx=5)
+        ttk.Label(scrollable_frame, text=f"{data['target']:.2f}").grid(row=row_index, column=2, sticky="e", padx=5)
+        ttk.Label(scrollable_frame, text=f"{remaining:.2f}").grid(row=row_index, column=3, sticky="e", padx=5)
 
-# ===== ADD AMOUNT WINDOW =====
+# ===== Add Amount Window =====
 def open_add_amount(index):
     data = contributors_data[index]
 
@@ -75,7 +61,7 @@ def open_add_amount(index):
 
             form_window.destroy()
         except:
-            messagebox.showerror("Error", "Invalid input")
+            print("Invalid input")
 
     ttk.Button(form_window, text="Update", command=update_amount).pack(pady=10)
 
@@ -107,33 +93,30 @@ def edit_contributor():
     canvas.pack(side="left", fill="both", expand=True)
     scrollbar.pack(side="right", fill="y")
 
-    # ===== REFRESH EDIT LIST =====
+    # ===== Refresh List =====
     def refresh_edit_list():
         for widget in list_frame.winfo_children():
             widget.destroy()
-
-        if not contributors_data:
-            ttk.Label(list_frame, text="No contributors yet.").pack(pady=20)
-            return
 
         for i, data in enumerate(contributors_data):
             row = ttk.Frame(list_frame)
             row.pack(fill="x", pady=5)
 
-            # NAME
+            # Name
             ttk.Label(row, text=data["name"], width=15).pack(side="left")
 
-            # ADD BUTTON
+            # Add Amount Button
             ttk.Button(
                 row,
                 text="Add Current Amount",
                 command=lambda idx=i: open_add_amount(idx)
             ).pack(side="left", padx=10)
 
-            # RIGHT SIDE
+            # Right side container
             right_frame = ttk.Frame(row)
             right_frame.pack(side="right")
 
+            # Last added
             ttk.Label(
                 right_frame,
                 text=f"{data['last_added']:.2f}",
@@ -141,7 +124,7 @@ def edit_contributor():
                 anchor="e"
             ).pack(side="left", padx=5)
 
-            # DELETE BUTTON
+            # ❌ DELETE BUTTON
             def delete_record(idx=i):
                 confirm = messagebox.askyesno(
                     "Delete Record",
@@ -196,9 +179,7 @@ columns = ["Contributor", "Current", "Target", "Remaining"]
 for i, col in enumerate(columns):
     anchor = "e" if col != "Contributor" else "w"
 
-    ttk.Label(header_frame, text=col, font=("Arial", 11, "bold")).grid(
-        row=0, column=i, sticky=anchor, padx=5
-    )
+    ttk.Label(header_frame, text=col, font=("Arial", 11, "bold")).grid(row=0, column=i, sticky=anchor, padx=5)
     header_frame.columnconfigure(i, minsize=col_widths[i])
 
 # ===== SCROLLABLE TABLE =====
